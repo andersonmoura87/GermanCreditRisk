@@ -37,3 +37,4 @@ Explore o GCR e descubra as histórias que ele conta!
 *Link para download:* https://archive.ics.uci.edu/ml/datasets/South+German+Credit+%28UPDATE%29 
 
 *Contém a documentação e um breve dicionario de dados referente ao dataset*
+  
