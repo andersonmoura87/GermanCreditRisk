@@ -30,9 +30,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -44,7 +44,7 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Cache Poetry + venv
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/pypoetry
@@ -63,9 +63,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -77,7 +77,7 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Cache Poetry + venv
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/pypoetry
@@ -105,7 +105,7 @@ jobs:
         if: >-
           github.event_name == 'push'
           && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-xml
           path: coverage.xml
@@ -125,9 +125,9 @@ jobs:
       contents: read
       security-events: write   # upload SARIF de bandit (futuro)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -139,7 +139,7 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Cache Poetry + venv
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/pypoetry
@@ -164,7 +164,7 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: actions/dependency-review-action@v4
         with:
@@ -180,7 +180,7 @@ jobs:
       security-events: write   # upload SARIF do Trivy
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Metadados de tag (SHA, latest, semver automático)
       - name: Extrair metadados Docker
@@ -210,7 +210,7 @@ jobs:
       # Build + push (push apenas em main/master ou tags semver)
       - name: Build e push Docker image
         id: build-push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: api/Dockerfile
@@ -222,7 +222,7 @@ jobs:
 
       # Trivy — scan da imagem recém-construída (usa digest do build-push)
       - name: Trivy — scan de imagem (DevSecOps)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: image
           image-ref: >-
@@ -245,7 +245,7 @@ jobs:
           github.event_name == 'push'
           && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results.sarif
 
