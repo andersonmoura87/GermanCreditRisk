@@ -223,6 +223,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # Para PRs o Trivy usa imagem local (ainda não publicada); deve rodar ANTES do scan
+      - name: Build local para PRs (Trivy)
+        if: github.event_name == 'pull_request'
+        run: docker build -f api/Dockerfile -t ${{ env.IMAGE_NAME }}:ci .
+
       # Trivy — scan da imagem recém-construída (usa digest do build-push)
       - name: Trivy — scan de imagem (DevSecOps)
         uses: aquasecurity/trivy-action@v0.36.0
@@ -236,11 +241,6 @@ jobs:
           output: trivy-results.sarif
           severity: CRITICAL,HIGH
           exit-code: "0"
-
-      # Para PRs o Trivy usa imagem local (ainda não publicada)
-      - name: Build local para PRs (Trivy)
-        if: github.event_name == 'pull_request'
-        run: docker build -f api/Dockerfile -t ${{ env.IMAGE_NAME }}:ci .
 
       # Envia resultado SARIF para aba Security do GitHub
       - name: Enviar SARIF → GitHub Code Scanning
