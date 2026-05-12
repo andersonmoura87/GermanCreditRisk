@@ -157,9 +157,12 @@ jobs:
         run: make security-audit
 
   # ── Dependency Review (PRs) ───────────────────────────────────────────────
+  # Requer "Dependency graph" habilitado em Settings → Security & analysis.
+  # continue-on-error: true garante que PRs não bloqueiam se o recurso não estiver ativo.
   dependency-review:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    continue-on-error: true   # graceful em repos sem Dependency graph habilitado
     permissions:
       contents: read
       pull-requests: read
