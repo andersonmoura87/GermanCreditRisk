@@ -1,0 +1,8 @@
+              precision    recall  f1-score   support
+
+         mau       0.68      0.50      0.58        72
+         bom       0.81      0.90      0.85       168
+
+    accuracy                           0.78       240
+   macro avg       0.74      0.70      0.71       240
+weighted avg       0.77      0.78      0.77       240

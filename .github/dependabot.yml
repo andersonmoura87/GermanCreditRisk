@@ -1,0 +1,24 @@
+# DevSecOps: atualização contínua de dependências (supply chain hygiene).
+# Cobre três superfícies de ataque: actions, pip/poetry e base image Docker.
+version: 2
+updates:
+  # GitHub Actions — mantém runners e actions atualizados
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+
+  # Python / Poetry — atualiza bibliotecas e fecha CVEs no poetry.lock
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Docker — atualiza a imagem base python:3.11-slim
+  - package-ecosystem: "docker"
+    directory: "/api"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2

@@ -1,0 +1,263 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*.*.*"]
+  pull_request:
+
+# Permissão mínima global (least-privilege); jobs sobrescrevem conforme necessário
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  POETRY_VERSION: "1.8.3"
+  IMAGE_NAME: german-credit-risk-api
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Jobs paralelos: lint ∥ test ∥ security  →  docker (gate)
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+
+  # ── Lint ──────────────────────────────────────────────────────────────────
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry + venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry
+            .venv
+          key: ${{ runner.os }}-py-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Lint (ruff + black + mypy)
+        run: make lint
+
+  # ── Testes ────────────────────────────────────────────────────────────────
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry + venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry
+            .venv
+          key: ${{ runner.os }}-py-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      # PRs e branches: rápido, sem cobertura
+      - name: Testes rápidos (PRs / branches)
+        if: >-
+          github.event_name != 'push'
+          || (github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master')
+        run: make test-ci
+
+      # main/master: cobertura + upload do XML
+      - name: Testes + cobertura (main/master)
+        if: >-
+          github.event_name == 'push'
+          && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        run: make test-cov-main
+
+      - name: Upload coverage XML
+        if: >-
+          github.event_name == 'push'
+          && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: warn
+
+      # Testes lentos (GX batch.validate) — apenas em main/master
+      - name: Testes lentos — Great Expectations
+        if: >-
+          github.event_name == 'push'
+          && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        run: make test-slow
+
+  # ── Segurança ─────────────────────────────────────────────────────────────
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write   # upload SARIF de bandit (futuro)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry + venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry
+            .venv
+          key: ${{ runner.os }}-py-${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Bandit — SAST
+        run: make security
+
+      - name: pip-audit — CVEs em runtime
+        continue-on-error: true
+        run: make security-audit
+
+  # ── Dependency Review (PRs) ───────────────────────────────────────────────
+  dependency-review:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  # ── Docker: build + Trivy + push para GHCR ───────────────────────────────
+  docker:
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    permissions:
+      contents: read
+      packages: write          # push para GHCR
+      security-events: write   # upload SARIF do Trivy
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Metadados de tag (SHA, latest, semver automático)
+      - name: Extrair metadados Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      # Login no GitHub Container Registry
+      - name: Login GHCR
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build com BuildKit (cache eficiente para multi-stage)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build + push (push apenas em main/master ou tags semver)
+      - name: Build e push Docker image
+        id: build-push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: api/Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Trivy — scan da imagem recém-construída (usa digest do build-push)
+      - name: Trivy — scan de imagem (DevSecOps)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: image
+          image-ref: >-
+            ${{ github.event_name == 'push'
+              && format('ghcr.io/{0}/{1}@{2}', github.repository_owner, env.IMAGE_NAME, steps.build-push.outputs.digest)
+              || format('{0}:{1}', env.IMAGE_NAME, 'ci') }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: "0"
+
+      # Para PRs o Trivy usa imagem local (ainda não publicada)
+      - name: Build local para PRs (Trivy)
+        if: github.event_name == 'pull_request'
+        run: docker build -f api/Dockerfile -t ${{ env.IMAGE_NAME }}:ci .
+
+      # Envia resultado SARIF para aba Security do GitHub
+      - name: Enviar SARIF → GitHub Code Scanning
+        if: >-
+          github.event_name == 'push'
+          && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      # Sumário de tags publicadas (visível no log do Actions)
+      - name: Sumário de imagens publicadas
+        if: github.event_name == 'push'
+        run: |
+          echo "## Docker Image" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tags publicadas:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Digest: \`${{ steps.build-push.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY

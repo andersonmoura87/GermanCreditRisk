@@ -1,0 +1,98 @@
+[tool.poetry]
+name = "german-credit-risk"
+version = "0.1.0"
+description = "German Credit Risk — senior data science & MLOps scaffold"
+readme = "README.md"
+authors = []
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+pandas = "^2.2.0"
+numpy = "^2.1.0"
+scipy = "^1.13.0"
+scikit-learn = "^1.4.0"
+pyarrow = "^17.0.0"
+PyYAML = "^6.0.1"
+mlflow = "^2.14.0"
+dvc = "^3.50.0"
+pandera = "^0.20.0"
+pydantic = "^2.6.0"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.29.0"}
+httpx = ">=0.24.0,<0.25.0"
+python-bcb = "^0.2.0"
+matplotlib = "^3.8.0"
+great-expectations = "^1.17.0"
+
+# Pacotes grandes (SHAP, profiling, boosters) ficam no grupo opcional ``full``
+# para ``poetry install`` rápido no dia a dia. Notebooks / modelos avançados:
+#   poetry install --with full
+
+[tool.poetry.group.full.dependencies]
+imbalanced-learn = "^0.12.0"
+xgboost = "^2.0.0"
+lightgbm = "^4.0.0"
+optuna = "^3.6.0"
+fairlearn = "^0.10.0"
+shap = "^0.45.0"
+scorecardpy = "^0.1.9.2"
+ydata-profiling = "^4.6.0"
+streamlit = "^1.35.0"
+# evidently 0.4.x fixa numpy<2.1; reative quando houver release compatível com numpy 2.x
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+pytest-cov = "^5.0.0"
+ruff = "^0.4.4"
+black = "^24.4.2"
+mypy = "^1.10.0"
+pre-commit = "^3.7.0"
+pandas-stubs = "^2.2.0"
+types-PyYAML = "^6.0.12"
+nbconvert = "^7.16.0"
+ipykernel = "^6.29.0"
+bandit = {extras = ["toml"], version = "^1.7.8"}
+pip-audit = "^2.7.3"
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "api", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false          # yaml/joblib/pandas retornam Any — muito ruidoso em DS
+warn_unused_configs = true
+ignore_missing_imports = true
+check_untyped_defs = true
+
+# Módulos com dependências pesadas (sem stubs): relaxar completamente
+[[tool.mypy.overrides]]
+module = [
+    "src.features.macro_features",
+    "src.data.ge_suite",
+]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --cov=src --cov=api --cov-report=term-missing"
+markers = [
+    "slow: integrações pesadas (ex.: Great Expectations ``batch.validate`` completo).",
+]

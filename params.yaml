@@ -1,0 +1,55 @@
+split:
+  test_size: 0.2
+  random_state: 42
+
+mlflow:
+  experiment_name: german_credit_risk
+
+model:
+  baseline: logistic_regression
+  max_iter: 500
+
+# Calibração de probabilidades — Platt scaling (sigmoid) ou isotônica
+calibration:
+  method: sigmoid   # 'sigmoid' = Platt scaling; 'isotonic' para datasets maiores
+  cv: 5
+
+# Fairness — atributos sensíveis para análise de viés (LGPD / BACEN 4.557)
+fairness:
+  sensitive_cols:
+    - personal_status_sex   # proxy de gênero no GCR (1-5 → binário M/F)
+  age_bins: [18, 30, 45, 60, 120]
+  age_labels: ["18-30", "31-45", "46-60", "60+"]
+  threshold: 0.5            # limiar de decisão para demographic parity
+
+paths:
+  raw_csv: data/raw/credit_risk_dataset.csv
+  interim_parquet: data/interim/german_credit.parquet
+  processed_parquet: data/processed/features.parquet
+  woe_value_maps: data/processed/woe_value_maps.joblib
+  model_dir: models
+
+iv_woe:
+  max_bins: 10
+  # woe: grava features em WoE + mapas para a API; raw: parquet bruto + IV/WoE só em iv_summary.csv
+  encoding: woe
+
+# MLflow Model Registry — ciclo de vida do modelo
+registry:
+  model_name: german_credit_risk
+  auto_register: true     # registra automaticamente após cada treino bem-sucedido
+  staging_threshold:      # só promove se métricas >= limiar (gate de qualidade)
+    ks_statistic: 0.25
+    gini: 0.30
+    auc_roc: 0.70
+    brier_score: 0.25     # Brier <= limiar (menor = melhor)
+
+macro_br:
+  start_date: "2015-01-01"
+  series:
+    selic: 432
+    ipca: 433
+    desemprego: 24369
+    pib: 4380
+    credito_pf: 20539
+    inadimplencia: 21082

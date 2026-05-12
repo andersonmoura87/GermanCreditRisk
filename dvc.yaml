@@ -1,0 +1,88 @@
+stages:
+  prepare:
+    cmd: poetry run python -m src.data.make_dataset
+    deps:
+      - src/data/make_dataset.py
+      - params.yaml
+      - data/raw/credit_risk_dataset.csv
+    outs:
+      - data/interim/german_credit.parquet
+
+  validate:
+    cmd: poetry run python -m src.data.validate
+    deps:
+      - src/data/validate.py
+      - src/data/ge_suite.py
+      - great_expectations/expectations/german_credit_suite.json
+      - params.yaml
+      - data/interim/german_credit.parquet
+    outs:
+      - data/interim/validation_ok.flag
+
+  features:
+    cmd: poetry run python -m src.features.build_features
+    deps:
+      - src/features/build_features.py
+      - src/features/iv_woe.py
+      - params.yaml
+      - data/interim/german_credit.parquet
+      - data/interim/validation_ok.flag   # garante que validate roda antes de features
+    outs:
+      - data/processed/features.parquet
+      - data/processed/iv_summary.csv
+      - data/processed/woe_value_maps.joblib
+
+  train:
+    cmd: poetry run python -m src.models.train
+    deps:
+      - src/models/train.py
+      - src/models/evaluate.py
+      - src/models/registry.py
+      - params.yaml
+      - data/processed/features.parquet
+      - data/interim/german_credit.parquet
+    outs:
+      - models/
+
+  monitor:
+    cmd: poetry run python -m src.monitoring.report
+    deps:
+      - src/monitoring/report.py
+      - src/monitoring/drift.py
+      - src/monitoring/reference.py
+      - params.yaml
+      - data/processed/features.parquet
+      - data/processed/monitoring_reference.json
+      - models/
+    metrics:
+      - reports/monitoring_report.json:
+          cache: false
+    # always_changed: true  # descomente para forçar execução em cada `dvc repro`
+
+  evaluate:
+    cmd: poetry run python -m src.models.evaluate_pipeline
+    deps:
+      - src/models/evaluate_pipeline.py
+      - src/models/evaluate.py
+      - src/models/train.py
+      - params.yaml
+      - data/processed/features.parquet
+      - data/interim/german_credit.parquet
+      - models/
+    outs:
+      - data/processed/monitoring_reference.json:
+          cache: false
+    metrics:
+      - reports/metrics.json:
+          cache: false
+    plots:
+      - reports/calibration_curve.csv:
+          cache: false
+          x: mean_predicted
+          y: fraction_positive
+          title: "Curva de Calibração"
+      - reports/score_distribution.csv:
+          cache: false
+          x: bin_center
+          y: density
+          title: "Distribuição de Scores por Classe"

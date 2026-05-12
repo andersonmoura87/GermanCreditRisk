@@ -1,0 +1,111 @@
+{
+  "name": "german_credit_suite",
+  "id": null,
+  "expectations": [
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "credit_risk"
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "credit_risk",
+        "min_value": 0.0,
+        "max_value": 1.0
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "credit_amount"
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "credit_amount",
+        "min_value": 0.0,
+        "max_value": 2000000.0
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "age"
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "age",
+        "min_value": 16.0,
+        "max_value": 120.0
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "credit_duration"
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "credit_duration",
+        "min_value": 1.0,
+        "max_value": 120.0
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_table_row_count_to_be_between",
+      "kwargs": {
+        "min_value": 500,
+        "max_value": 5000
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "account_status",
+        "min_value": 1.0,
+        "max_value": 4.0
+      },
+      "meta": {},
+      "severity": "critical"
+    },
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "installment_rate",
+        "min_value": 1.0,
+        "max_value": 4.0
+      },
+      "meta": {},
+      "severity": "critical"
+    }
+  ],
+  "meta": {
+    "great_expectations_version": "1.17.1"
+  },
+  "notes": null
+}

@@ -1,221 +1,112 @@
-Source:
+# German Credit Risk: Uma Análise Detalhada
 
-Ulrike GrÃ¶mping
-Beuth University of Applied Sciences Berlin
-Website with contact information: https://prof.beuth-hochschule.de/groemping/
+O German Credit Risk (GCR) é um conjunto de dados fascinante que oferece uma visão profunda do cenário de crédito na Alemanha. Reunindo informações de mais de 1.000 tomadores de crédito, o dataset permite explorar diversos aspectos do crédito e da inadimplência.
 
+## O que o GCR contém:
 
-Data Set Information:
+- **Dados Demográficos:** Idade, sexo, estado civil e renda dos tomadores de crédito.
+- **Histórico de Crédito:** Informações sobre pagamentos em atraso, inadimplência e outras pendências.
+- **Características do Empréstimo:** Valor do empréstimo, prazo, taxa de juros e tipo de garantia.
+- **Situação Profissional:** Tipo de emprego, renda e tempo de serviço.
+- **Outros Fatores:** Moradia, estado civil, educação e histórico de moradia.
 
-The widely used Statlog German credit data as of November 2019, suffers from severe errors in the coding information and does not come with any background information. The 'South German Credit' data provide a correction and some background information, based on the Open Data LMU (2010) representation of the same data and several other German language resources.
+## O que você pode fazer com o GCR:
 
+- **Analisar o perfil de risco de tomadores de crédito:** Identificar características que aumentam ou diminuem o risco de inadimplência.
+- **Desenvolver modelos de previsão de crédito:** Criar modelos para prever a probabilidade de um tomador de crédito inadimplir.
+- **Avaliar a qualidade de carteiras de crédito:** Analisar o risco de uma carteira de crédito e identificar os tomadores de crédito mais arriscados.
+- **Estudar os fatores que influenciam o risco de crédito:** Investigar como fatores como idade, renda e histórico de crédito afetam o risco de inadimplência.
+- **Comparar diferentes modelos de análise de crédito:** Avaliar o desempenho de diferentes modelos e escolher o mais adequado para cada situação.
 
-Attribute Information:
+## O GCR é um recurso valioso para:
 
-This section contains a brief description for each attribute. Details on attribute coding can be obtained from the accompanying R code for reading the data or the accompanying code table, as well as from Groemping (2019) (listed under 'Relevant Papers').
+- **Profissionais de crédito:** Bancos, instituições financeiras e empresas de análise de crédito.
+- **Pesquisadores:** Acadêmicos e estudantes que estudam economia, finanças ou risco de crédito.
+- **Entusiastas de dados:** Qualquer pessoa interessada em aprender sobre análise de dados e machine learning.
 
+## Para acessar o GCR:
 
-Variable name: account_status
-Content: status of the debtor's checking account with the bank (categorical)
+- **Download:** O dataset está disponível gratuitamente para download em diversos repositórios online.
+- **Ferramentas:** Existem diversas ferramentas online e offline que permitem analisar o GCR.
+- **Tutoriais:** Há uma variedade de tutoriais e cursos online que ensinam como usar o GCR.
 
-     1 :  no checking account                       
-     2 : ... < 0 DM                                
-     3 : 0<= ... < 200 DM                          
-     4 : ... >= 200 DM / salary for at least 1 year
+Explore o GCR e descubra as histórias que ele conta!
 
+*Lembre-se: O GCR é um dataset real e contém informações confidenciais. É importante usar o dataset de forma responsável e ética.*
 
-Variable name: credit_duration
-Content: credit duration in months (quantitative)
+*Link para download:* https://archive.ics.uci.edu/ml/datasets/South+German+Credit+%28UPDATE%29
 
+*Contém a documentação e um breve dicionário de dados referente ao dataset.*
 
+---
 
-Variable name: history_of_compliance
-Content: history of compliance with previous or concurrent credit contracts (categorical)
+## Fonte e citação do dataset
 
-     0 : delay in paying off in the past            
-     1 : critical account/other credits elsewhere   
-     2 : no credits taken/all credits paid back duly
-     3 : existing credits paid back duly till now   
-     4 : all credits at this bank paid back duly    
+**Autor:** Ulrike Grömping — Beuth University of Applied Sciences Berlin  
+**Contato:** https://prof.beuth-hochschule.de/groemping/
 
+> Este repositório utiliza a versão corrigida **South German Credit Data** (Grömping, 2019), que corrige erros de codificação da versão Statlog original (novembro/2019) com base em Open Data LMU (2010) e outras fontes em alemão.
 
-Variable name: credit_purpose 
-Content: purpose for which the credit is needed (categorical)
+### Dicionário de variáveis
 
-     0 : others             
-     1 : car (new)          
-     2 : car (used)         
-     3 : furniture/equipment
-     4 : radio/television   
-     5 : domestic appliances
-     6 : repairs            
-     7 : education          
-     8 : vacation           
-     9 : retraining         
-     10 : business 
- 
- 
-Variable name: credit_amount 
-Content: credit amount in DM (quantitative; result of monotonic transformation; actual data and type of transformation unknown)
+| Variável | Tipo | Descrição |
+|---|---|---|
+| `account_status` | cat. | Status da conta corrente: 1=sem conta, 2=<0 DM, 3=0–200 DM, 4=≥200 DM |
+| `credit_duration` | quant. | Duração do crédito em meses |
+| `history_of_compliance` | cat. | Histórico de cumprimento: 0=atraso, 1=crítico, 2=quitado, 3=em dia, 4=tudo quitado no banco |
+| `credit_purpose` | cat. | Finalidade: 0=outros, 1=carro novo, 2=carro usado, 3=móveis, 4=rádio/TV, 5=eletrodom., 6=reparos, 7=educação, 8=férias, 9=requalificação, 10=negócios |
+| `credit_amount` | quant. | Valor do crédito em DM (transformação monotônica; dados originais desconhecidos) |
+| `savings` | cat. | Poupança: 1=desconhecido/sem conta, 2=<100 DM, 3=100–500 DM, 4=500–1000 DM, 5=≥1000 DM |
+| `employment_duration` | ord. | Tempo no emprego atual: 1=desempregado, 2=<1 ano, 3=1–4 anos, 4=4–7 anos, 5=≥7 anos |
+| `installment_rate` | ord. | Prestação como % da renda disponível: 1=≥35%, 2=25–35%, 3=20–25%, 4=<20% |
+| `personal_status_sex` | cat. | Sexo/estado civil: 1=M divorciado, 2=F não-solteira ou M solteiro, 3=M casado/viúvo, 4=F solteira |
+| `other_debtors` | cat. | Outros devedores/garantidores: 1=nenhum, 2=co-solicitante, 3=fiador |
+| `present_residence` | ord. | Tempo na residência atual: 1=<1 ano, 2=1–4 anos, 3=4–7 anos, 4=≥7 anos |
+| `property` | ord. | Bem mais valioso: 1=nenhum, 2=carro/outros, 3=seguro de vida, 4=imóvel |
+| `age` | quant. | Idade em anos |
+| `other_installment_plans` | cat. | Planos de parcelamento externos: 1=banco, 2=lojas, 3=nenhum |
+| `type_of_housing` | cat. | Moradia: 1=gratuita, 2=aluguel, 3=própria |
+| `number_credits` | ord. | Número de créditos no banco: 1=1, 2=2–3, 3=4–5, 4=≥6 |
+| `job` | ord. | Qualificação profissional: 1=desempregado/não-residente, 2=não-qualificado, 3=qualificado, 4=gerente/autônomo |
+| `people_liable` | bin. | Dependentes financeiros: 1=3 ou mais, 2=0–2 |
+| `telephone` | bin. | Telefone fixo registrado no nome |
+| `level_of_education` | cat. | Nível de escolaridade |
+| `entry_payment` | quant. | Entrada em DM (transformação monotônica) |
+| `credit_risk` | bin. | **Target** — 0=mau pagador (inadimplente), 1=bom pagador (adimplente) |
 
+### Referências
 
-Variable name: savings
-Content: debtor's savings (categorical)
+- Grömping, U. (2019). *South German Credit Data: Correcting a Widely Used Data Set.* Report 4/2019, Beuth University of Applied Sciences Berlin.
+- Fahrmeir, L. & Hamerle, A. (1984). *Multivariate Statistische Verfahren* (1st ed., Ch. 8). De Gruyter, Berlin.
+- Open Data LMU (2010). *Kreditscoring zur Klassifikation von Kreditnehmern.* Accessed Nov 27, 2019.
 
-     1 : unknown/no savings account
-     2 : ... <  100 DM             
-     3 : 100 <= ... <  500 DM      
-     4 : 500 <= ... < 1000 DM      
-     5 : ... >= 1000 DM    
+---
 
+## Projeto sênior (estrutura de código)
 
-Variable name: employment_duration
-Content: duration of debtor's employment with current employer (ordinal; discretized quantitative)
+Este repositório segue a estrutura e o checklist completo (identidade, stack, macro BR, notebooks, domínio) em [`AGENTS.md`](AGENTS.md). O CSV bruto do GCR fica em **`data/raw/credit_risk_dataset.csv`** (não editar).
 
-     1 : unemployed      
-     2 : < 1 yr          
-     3 : 1 <= ... < 4 yrs
-     4 : 4 <= ... < 7 yrs
-     5 : >= 7 yrs        
+**Pré-requisitos:** Python 3.11–3.13 e [Poetry](https://python-poetry.org/).
 
+Instalação **rápida** (pipeline baseline + API + testes): `poetry install`.
 
-Variable name: installment_rate
-Content: credit installments as a percentage of debtor's disposable income (ordinal; discretized quantitative)
+Para notebooks “sênior” (SHAP, ydata-profiling, XGBoost/LightGBM, Evidently, etc.): `poetry install --with full`.
 
-     1 : >= 35         
-     2 : 25 <= ... < 35
-     3 : 20 <= ... < 25
-     4 : < 20
+Testes sem medir cobertura (mais rápido): `poetry run pytest --no-cov -q`.
 
+**CI/CD & segurança (GitHub Actions):** jobs paralelos `lint`, `test` e `security` (Bandit + pip-audit); em **PRs**, *Dependency Review* (vulnerabilidades em dependências). Em **PRs/branch:** `make test-ci`; no **push** `main`/`master`: cobertura + testes lentos (GX) + **Trivy** na imagem Docker e upload de SARIF (Code scanning, quando disponível). O build Docker exige `lint`, `test` e `security` OK. **Dependabot** em `.github/dependabot.yml` mantém Actions e `poetry.lock` atualizados.
 
-Variable name: personal_status_sex
-Content: combined information on sex and marital status; categorical; sex cannot be recovered from the
-variable, because male singles and female non-singles are coded with the same code (2); female widows cannot
-be easily classified, because the code table does not list them in any of the female categories
+```text
+poetry install
+poetry run python -m src.data.make_dataset
+poetry run python -m src.data.validate
+poetry run python -m src.features.build_features
+poetry run python -m src.models.train
+```
 
-     1 : male : divorced/separated           
-     2 : female : non-single or male : single
-     3 : male : married/widowed              
-     4 : female : single  
+Ou, com [DVC](https://dvc.org/) inicializado (`dvc init`): `make train`.
 
+**API local:** `make serve` (ou `poetry run uvicorn api.main:app --reload --port 8000`). É necessário o artefato `models/baseline.joblib` após o treino.
 
-Variable name: other_debtors
-Content: Is there another debtor or a guarantor for the credit? (categorical)
+O CSV bruto deve estar em `data/raw/credit_risk_dataset.csv`.
 
-     1 : none        
-     2 : co-applicant
-     3 : guarantor   
-
-
-Variable name: present_residence
-Content: length of time (in years) the debtor lives in the present residence (ordinal; discretized quantitative)
-
-
-     1 : < 1 yr          
-     2 : 1 <= ... < 4 yrs
-     3 : 4 <= ... < 7 yrs
-     4 : >= 7 yrs    
-
-
-Variable name: property
-Content: the debtor's most valuable property, i.e. the highest possible code is used. Code 2 is used, if codes 3
-or 4 are not applicable and there is a car or any other relevant property that does not fall under variable
-sparkont. (ordinal)
-
-     1 : unknown / no property                    
-     2 : car or other                             
-     3 : building soc. savings agr./life insurance
-     4 : real estate   
- 
-
-Variable name: age
-Content: age in years (quantitative)
-
- 
-
-
-Variable name: other_installment_plans
-Content: installment plans from providers other than the credit-giving bank (categorical)
-
-     1 : bank  
-     2 : stores
-     3 : none 
-
-
-Variable name: type_of_housing
-Content: type of housing the debtor lives in (categorical)
-
-     1 : for free
-     2 : rent    
-     3 : own     
-
-
-Variable name: number_credits
-Content: number of credits including the current one the debtor has (or had) at this bank (ordinal, discretized
-quantitative); contrary to Fahrmeir and HamerleÃ¢â‚¬â„¢s (1984) statement, the original data values are not available.
-
-     1 : 1   
-     2 : 2-3 
-     3 : 4-5 
-     4 : >= 6
-
-
-
-Variable name: job
-Content: quality of debtor's job (ordinal)
-
-     1 : unemployed/unskilled - non-resident       
-     2 : unskilled - resident                      
-     3 : skilled employee/official                 
-     4 : manager/self-empl./highly qualif. employee
-
-
-Variable name: people_liable
-Content: number of persons who financially depend on the debtor (i.e., are entitled to maintenance) (binary,
-discretized quantitative)
-
-     1 : 3 or more
-     2 : 0 to 2   
-
-
-Variable name: telephone
-Content: Is there a telephone landline registered on the debtor's name? (number)
-
-
-Variable name: level_of_education
-Content: level of education (categorical)
-
-
-Variable name: entry_payment
-Content: entry payment in DM (quantitative; result of monotonic transformation; actual data and type of transformation unknown)
-
-
-
-Variable name: credit_risk
-Content: Has the credit contract been complied with (good) or not (bad) ? (binary)
-
-
-     0 : bad 
-     1 : good
-
-
-
-Relevant Papers:
-
-Fahrmeir, L. and Hamerle, A. (1981, in German). Kategoriale Regression in der betrieblichen Planung. *Zeitschrift für Operations Research* **25**, B63-B78.
-
-Fahrmeir, L. and Hamerle, A. (1984, in German). *Multivariate Statistische Verfahren* (1st ed., Ch.8 and Appendix C). De Gruyter, Berlin.
-
-Grömping, U. (2019). South German Credit Data: Correcting a Widely Used Data Set. Report 4/2019, Reports in Mathematics, Physics and Chemistry, Department II, Beuth University of Applied Sciences Berlin.
-
-Häußler, W.M. (1979, in German). Empirische Ergebnisse zu Diskriminationsverfahren bei Kreditscoringsystemen. *Zeitschrift für Operations Research* **23**, B191-B210.
-
-Hofmann, H.J. (1990, in German). Die Anwendung des CART-Verfahrens zur statistischen Bonitätsanalyse von Konsumentenkrediten. *Zeitschrift für Betriebswirtschaft* **60**, 941-962.
-
-Open data LMU (2010; accessed Nov 27 2019; in German). Kreditscoring zur Klassifikation von Kreditnehmern.
-
-
-
-Citation Request:
-
-Grömping, U. (2019). South German Credit Data: Correcting a Widely Used Data Set. Report 4/2019, Reports in Mathematics, Physics and Chemistry, Department II, Beuth University of Applied Sciences Berlin.
