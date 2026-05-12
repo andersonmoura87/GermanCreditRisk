@@ -19,7 +19,7 @@ dvc = "^3.50.0"
 pandera = "^0.20.0"
 pydantic = "^2.6.0"
 fastapi = "^0.115.0"
-uvicorn = {extras = ["standard"], version = "^0.29.0"}
+uvicorn = {extras = ["standard"], version = ">=0.29,<0.47"}
 httpx = ">=0.24.0,<0.25.0"
 python-bcb = "^0.2.0"
 matplotlib = "^3.8.0"
