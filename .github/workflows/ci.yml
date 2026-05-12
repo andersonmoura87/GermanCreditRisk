@@ -210,7 +210,7 @@ jobs:
       # Build + push (push apenas em main/master ou tags semver)
       - name: Build e push Docker image
         id: build-push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: api/Dockerfile
