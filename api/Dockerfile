@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 1 — builder: instala dependências em venv isolado
 # ─────────────────────────────────────────────────────────────────────────────
-FROM python:3.11-slim AS builder
+FROM python:3.14-slim AS builder
 
 WORKDIR /build
 
@@ -20,7 +20,7 @@ RUN poetry install --only main --no-root && rm -rf $POETRY_CACHE_DIR
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 2 — runtime: imagem final mínima e segura
 # ─────────────────────────────────────────────────────────────────────────────
-FROM python:3.11-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 # curl necessário apenas para o HEALTHCHECK
 RUN apt-get update && apt-get install -y --no-install-recommends \
